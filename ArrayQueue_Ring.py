@@ -1,4 +1,4 @@
-# 원형 큐 클래스 정의 (1)
+# 원형 큐 클래스 정의 (2) - 링 버퍼를 위한 삽입 연산 추가
 class ArrayQueue:
     def __init__(self, capacity = 10): # capacity 기본 값을 10으로 지정
         self.capacity = capacity
@@ -55,18 +55,34 @@ class ArrayQueue:
             print(self.array[i % self.capacity], end = ' ')
             print(']')
 
-    
-# 원형 큐의 동작 확인 테스트 프로그램
-import random
+    # 링 버퍼 삽입 연산
+    def enqueue2(self, item):
+        # 삽입
+        self.rear = (self.rear + 1) % self.capacity
+        self.array[self.rear] = item
+
+        # 삽입 후, 공백(front = rear)이면 오류 상태이므로
+        # 이 경우에는 front를 회전시켜 가장 오래된 요소를 삭제
+        if self.isEmpty():
+            self.front = (self.front + 1) % self.capacity
+
+# 링 버퍼 테스트 프로그램
 if __name__ == '__main__':
     q = ArrayQueue(8)
 
     q.display('초기 상태')
-    while not q.isFull(): # 큐가 포화 상태가 될 때까지 while문 실행
-        q.enqueue(random.randint(0, 100))
-    q.display('포화 상태')
+    for i in range(6):
+        q.enqueue2(i)
+    q.display('삽입 0-5')
 
-    print('삭제 순서: ', end = '')
-    while not q.isEmpty(): # 큐가 공백 상태가 될 때까지 while문 실행
-        print(q.dequeue(), end = ' ')
-    print()
+    # 6, 7 삽입
+    q.enqueue2(6); q.enqueue2(7)
+    q.display('삽입 6, 7')
+
+    # 8, 9 삽입
+    q.enqueue2(8); q.enqueue2(9)
+    q.display('삽입 8, 9')
+
+    # 삭제 연산 2회
+    q.dequeue(); q.dequeue()
+    q.display('삭제 x 2') 
